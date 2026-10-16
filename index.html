@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project K.I.W.I. | Ultimate Game Terminal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            color: #d4af37;
+            overflow-x: hidden;
+        }
+
+        /* Fixed Gold Matrix Rain Layer */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* UI Content Wrapper */
+        .ui-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(3px);
+            padding: 40px 15px;
+        }
+
+        /* Main Console Header Box */
+        .console-header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(15, 15, 15, 0.95);
+            border: 2px solid #d4af37;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            text-shadow: 0 0 12px rgba(212, 175, 55, 0.7);
+            margin-bottom: 5px;
+        }
+
+        .status-panel {
+            font-size: 0.8rem;
+            color: #f3e5ab;
+            margin-top: 10px;
+            border-top: 1px dashed rgba(212, 175, 55, 0.3);
+            padding-top: 10px;
+        }
+
+        /* Interactive On-Screen Arcade Panel */
+        .emulator-panel {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(10, 10, 10, 0.98);
+            border: 2px solid #d4af37;
+            border-radius: 4px;
+            margin-bottom: 35px;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+            display: none;
+        }
+
+        .em-header {
+            background: #151515;
+            padding: 10px 15px;
+            border-bottom: 1px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .em-close {
+            background: transparent;
+            color: #ff4d4d;
+            border: 1px solid #ff4d4d;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .em-close:hover {
+            background: #ff4d4d;
+            color: #000;
+        }
+
+        .game-frame-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* Clean 16:9 Aspect Ratio */
+            background: #000;
+        }
+
+        .game-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Category Menu Titles */
+        .category-title {
+            width: 100%;
+            max-width: 1200px;
+            font-size: 1.4rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin: 35px 0 15px 0;
+            border-left: 5px solid #d4af37;
+            padding-left: 12px;
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Responsive Games Dashboard Layout Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 20px;
+        }
+
+        .game-card {
+            background: rgba(15, 15, 15, 0.95);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 4px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #d4af37;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .game-meta {
+            margin-bottom: 15px;
+        }
+
+        .game-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-size: 1.15rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .game-desc {
+            font-size: 0.75rem;
+            color: #a69363;
+            line-height: 1.4;
+        }
+
+        .btn-launch {
+            display: block;
+            width: 100%;
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 10px;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-launch:hover {
+            background: #d4af37;
+            color: #000;
+            box-shadow: 0 0 15px #d4af37;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="ui-container">
+        
+        <header class="console-header">
+            <h1>🥝 KIWI.MASTER_DECK</h1>
+            <div class="status-panel">ALL INTEGRATED EMULATION SYSTEMS: ONLINE // DIRECT PORT SUBSYSTEMS LOADED</div>
+        </header>
+
+        <!-- Dynamic Game Runtime Screen Panel -->
+        <section class="emulator-panel" id="runtime-emu-window">
+            <div class="em-header">
+                <span id="emu-active-title" style="font-weight: bold; font-size: 0.9rem;">EXECUTING OBJECT BLUEPRINT...</span>
+                <button class="em-close" onclick="shutdownActiveMatrixFrame()">TERMINATE FLOW</button>
+            </div>
+            <div class="game-frame-wrapper">
+                <iframe id="arcade-runtime-frame" class="game-frame" src="" allowfullscreen></iframe>
+            </div>
+        </section>
+
+        <!-- HORROR SECTION -->
+        <h2 class="category-title">💀 Survival & Horror Archives</h2>
+        <main class="games-grid">
+            <div class="game-card">
+                <div class="game-meta">
+                    <div class="game-icon">👵</div>
+                    <div class="game-title">Granny Core</div>
+                    <p class="game-desc">Bypass file mapping loading the classic unblocked survival house escape emulator.</p>
+                </div>
+                <button class="btn-launch" onclick="loadMatrixFrame('https://pages.dev', 'Granny Core Build')">Initialize</button>
+            </div>
+            <div class="game-card">
+                <div class="game-meta">
+                    <div class="game-icon">🐻</div>
+                    <div class="game-title">FNAF Mainframe</div>
+                    <p class="game-desc">Survive the night shift tracking camera data over secure canvas scripts.</p>
+                </div>
+                <button class="btn-launch" onclick="loadMatrixFrame('https://fnaf.games', 'Five Nights at Freddy\'s')">Initialize</button>
+            </div>
+            <div class="game-card">
+                <div class="game-meta">
+                    <div class="game-icon">👁️</div>
+                    <div class="game-title">Every Horror Network</div>
+                    <p class="game-desc">Launches a complete web directory housing thousands of unblocked indie jump-scare modules.</p>
+                </div>
+                <button class="btn-launch" onclick="loadMatrixFrame('https://crazygames.com', 'Infinite Horror Index')">Open Vault</button>
+            </div>
+        </main>
+
+        <!-- ACTION & GTA SECTION -->
+        <h2 class="category-title">💥 Action & Sandbox Directories</h2>
+        <main class="games-grid">
+            <div class="game-card">
+                <div class="game-meta">
+                    <div class="game-icon">🔫</div>
+                    <div class="game-title">GTA Web OpenWorld</div>
+                    <p class="game-desc">Injects retro top-down city driving and combat action simulators directly into the screen deck.</p>
+                </div>
+                <button class="btn-launch" onclick="loadMatrixFrame('https://classicgames.me', 'Grand Theft Auto Simulator')">Initialize</button>
+            </div>
+            <div class="game-card">
+                <div class="game-meta">
+                    <div class="game-icon">🛡️</div>
+                    <div class="game-title">Every Action Database</div>
+                    <p class="game-desc">Bypasses filters to connect directly to thousands of open battles, shooters, and fighting arenas.</p>
+                </div>
+                <button class="btn-launch" onclick="loadMatrixFrame('https://poki.com', 'Poki Action Framework')">Open Database</button>
+            </div>
+        </main>
+
+        <!-- VEHICLE & CAR SECTION -->
+        <h2 class="category-title">🏎️ High-Speed Racing Matrices</h2>
+        <main class="games-grid">
+            <div class="game-card">
+                <div class="game-meta">
+                    <div class="game-icon">🚦</div>
+                    <div class="game-title">Every Car Game Hub</div>
